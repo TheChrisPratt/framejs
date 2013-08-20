@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Control</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=99" />
+    <meta name="viewport" content="user-scalable=no, width=device-width" />
+    <link rel="SHORTCUT ICON" type="image/vnd.microsoft.icon" href="favicon.ico" />
+    <link rel="alternate" type="application/rss+xml" href="http://planetpratt.blogspot.com/atom.xml" title="PlanetPratt Blog" />
+    <link rel="stylesheet" href="css/lcars.css" media="screen" />
+    <link rel="stylesheet" href="css/cupertino/jquery-ui-1.10.3.custom.css" />
+    <script src="js/jquery-2.0.3.js"></script>
+    <script src="js/jquery-ui-1.10.3.custom.js"></script>
+    <script>
+      onerror = function(errMsg,location,lineNum) {
+        alert("Doh! " + location + ':' + lineNum + " - " + errMsg);
+        return true;
+      }; //Doh
+    </script>
+  </head>
+  <body>
+    <div id="body">
+      <div id="navigation">
+        <nav id="primary">
+          <ul>
+            <li><a target="_blank" href="http://gym.planetpratt.com/">Gym</a></li>
+            <li><a target="_blank" href="http://kitchen.planetpratt.com/">Kitchen</a></li>
+            <li><a target="_blank" href="http://mail.planetpratt.com/">Mail</a></li>
+            <li><a target="_blank" href="http://mail.google.com/">GMail</a></li>
+            <li><a target="_blank" href="http://www.facebook.com/">Facebook</a></li>
+          </ul>
+        </nav>
+        <nav id="secondary">
+          <ul>
+            <li>
+              <a href="#">Sprinklers</a>
+              <ul>
+                <li><a id="valveControlLink" href="#">Valve Control</a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#">Admin</a>
+              <ul>
+                <li><a href="http://modem.planetpratt.com" target="_blank">Cable Modem</a></li>
+                <li><a href="http://www.google.com/a/planetpratt.com" target="_blank">Google Apps</a></li>
+                <li><a href="http://router.planetpratt.com" target="_blank">Router</a></li>
+              </ul>
+            </li>
+            <hr />
+            <li>
+              <a href="http://home.anodyzed.com/" target="_blank">Anodyzed</a>
+              <ul>
+                <li>
+                  <a href="http://www.anodyzed.com/" target="_blank">Acceptance</a>
+                  <ul>
+                    <li><a href="http://exerceo.anodyzed.com/" target="_blank">Exerceo</a></li>
+                  </ul>
+                </li>
+                <li><a href="http://tracker.anodyzed.com/" target="_blank">Bug Tracker</a></li>
+                <li>
+                  <a href="http://anodyzed.planetpratt.com/" target="_blank">Development</a>
+                  <ul>
+                    <li><a href="http://anodyzed.planetpratt.com/oxyde.html" target="_blank">Oxyde</a></li>
+                  </ul>
+                </li>
+                <li><a href="http://exerceo.anodyzed.com/" target="_blank">Exerceo</a></li>
+                <li><a href="http://www.google.com/a/anodyzed.com" target="_blank">Google Apps</a></li>
+                <li><a href="http://mail.anodyzed.com/" target="_blank">Mail</a></li>
+                <li>
+                  <a href="http://svn.planetpratt.com:9880/" target="_blank">Subversion</a>
+                  <ul style="">
+                    <li><a href="http://svn.anodyzed.com:9890/ubersvn" target="_blank">Admin</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <hr />
+            <li>
+              <a href="http://home.planetpratt.com" target="_blank">Home</a>
+              <ul>
+                <li><a href="http://www.fandango.com/" target="_blank">Fandango</a></li>
+                <li><a href="http://www.last.fm/home" target="_blank">Last FM</a></li>
+                <li><a href="http://www.mspot.com/" target="_blank">mSpot</a></li>
+                <li><a href="http://www.songza.com/PlanetPratt" target="_blank">Songza</a></li>
+                <li><a href="http://sunpowermonitor.com/residential/" target="_blank">Sun Power</a></li>
+                <li><a href="http://www.vonage.com/" target="_blank">Vonage</a></li>
+                <li><a href="http://www.wsj.com/" target="_blank">WSJ</a></li>
+              </ul>
+            </li>
+            <li><a href="/exit">Exit</a></li>
+          </ul>
+        </nav>
+        <div id="content">
+          <div style="float:right;" class="noprint">
+            <div id="datePicker"></div>
+          </div>
+          <div id="core" style="float:left;"></div>
+        </div>
+      </div>
+    </div>
+    <div id="addTaskDialog" class="dialog" title="Add Task">
+      <form id="addTaskForm" name="addTask" action="add-task">
+        <table border="0">
+          <tr>
+            <th><label for="zone">Zone</label></th>
+            <td>
+              <select name="zone" id="zone" class="focus" required="required">
+                <option value="NLawn">Front Yard North Sprinklers</option>
+                <option value="SLawn">Front Yard South Sprinklers</option>
+                <option value="BLawn">Back Yard Sprinklers</option>
+                <option value="FDrip">Front Yard Drip</option>
+                <option value="NHill">Back Yard North Hill Drip</option>
+                <option value="SHill">Back Yard South Hill Drip</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th><label for="days">Days</label></th>
+            <td>
+              <select id="days" name="days" multiple="multiple">
+                <option value="mon">Monday</option>
+                <option value="tue">Tuesday</option>
+                <option value="wed">Wednesday</option>
+                <option value="thu">Thursday</option>
+                <option value="fri">Friday</option>
+                <option value="sat">Saturday</option>
+                <option value="sun">Sunday</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <th><label for="hour">Time</label></th>
+            <td>
+              <select name="hour" id="hour">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+              </select>&nbsp;:
+              <select name="minute" id="minute">
+                <option value="0">00</option>
+                <option value="5">05</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="35">35</option>
+                <option value="40">40</option>
+                <option value="45">45</option>
+                <option value="50">50</option>
+                <option value="55">55</option>
+              </select>&nbsp;
+              <span id="meridians">
+                <label><input type="radio" id="am" name="meridian" value="am" /> am</label>
+                <label><input type="radio" id="pm" name="meridian" value="pm" /> pm</label>
+              </span>
+            </td>
+          </tr>
+          <tr>
+            <th>Duration</th>
+            <td><label><input type="number" id="duration" name="duration" /> minutes</label></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+    <div id="valveControlDialog" class="dialog" title="Valve Control">
+      <form id="valveControlForm" name="valveControl" action="valve-control">
+        <table border="0">
+          <tr>
+            <th><label for="VC-NLawn">Front Yard North Sprinklers</label></th>
+            <td><input type="checkbox" id="VC-NLawn" name="nlawn" value="on" class="valve-control" /></td>
+          </tr>
+          <tr>
+            <th><label for="VC-SLawn">Front Yard South Sprinklers</label></th>
+            <td><input type="checkbox" id="VC-SLawn" name="slawn" value="on" class="valve-control" /></td>
+          </tr>
+          <tr>
+            <th><label for="VC-BLawn">Back Yard Sprinklers</label></th>
+            <td><input type="checkbox" id="VC-BLawn" name="blawn" value="on" class="valve-control" /></td>
+          </tr>
+          <tr>
+            <th><label for="VC-FDrip">Front Yard Drip</label></th>
+            <td><input type="checkbox" id="VC-FDrip" name="fdrip" value="on" class="valve-control" /></td>
+          </tr>
+          <tr>
+            <th><label for="VC-NHill">Back Yard North Hill Drip</label></th>
+            <td><input type="checkbox" id="VC-NHill" name="nhill" value="on" class="valve-control" /></td>
+          </tr>
+          <tr>
+            <th><label for="VC-SHill">Back Yard South Hill Drip</label></th>
+            <td><input type="checkbox" id="VC-SHill" name="shill" value="on" class="valve-control" /></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </body>
+  <script>
+    $(function() {
+
+        // Datepicker
+      $("#datePicker").datepicker({
+        altField: "#when",
+        altFormat: "yy-mm-dd",
+        dateFormat: "yy-mm-dd",
+        defaultDate: "${when}",
+        inline: true,
+        onSelect: function (date,picker) {
+          document.location = "<s:url action='meal-log' namespace='/'/>?when=" + $("#when").val();
+        },
+        selectOtherMonths: true,
+//        showButtonPanel: true,
+        showOtherMonths: true
+      });
+
+        // Add Task Dialog
+      $("#addTaskDialog").dialog({
+        autoOpen: false,
+        buttons: {
+          "Add": function() {
+            var frm = $("#addTaskForm");
+            if(frm.valid()) {
+//              $("#logBody").load(frm.attr("action"),frm.serialize()); 
+              $(this).dialog("close");
+              $(frm).clearForm();
+            }
+          }, 
+          "Cancel": function() { 
+            $(this).dialog("close"); 
+          }
+        },
+        closeText: "Close",
+        width: 600
+      });
+
+      $("#meridians").buttonset();
+
+      $("#addTaskButton").on("click",function() {
+        var now = new Date();
+        var frm = $("#addTaskForm");
+        var hr = now.getHours();
+        var mn = Math.floor((now.getMinutes() + 2) / 5) * 5;
+        if(mn == 60) {
+          mn = 0;
+          hr = (hr + 1) % 24;
+        }
+        frm.find((hr > 11) ? "#pm" : "#am").attr("checked","checked");
+        hr = hr % 12;
+        frm.find("#hour option[value='" + ((hr == 0) ? 12 : hr) + "']").attr("selected","selected");
+        frm.find("#minute option[value='" + ((mn < 10) ? '0' + mn : '' + mn) + "']").attr("selected","selected");
+        $("#meridians").buttonset("refresh");
+        $("#addTaskDialog").dialog("open");
+        return false;
+      });
+
+        // Valve Control Dialog
+      $("#valveControlDialog").dialog({
+        autoOpen: false,
+        closeText: "Close",
+        width: 300
+      });
+
+      var VALVES = ["#VC-NLawn","#VC-SLawn","#VC-BLawn","#VC-FDrip","#VC-NHill","#VC-SHill"];
+
+      $("#valveControlLink").on("click",function() {
+        var status;
+        $.getJSON("valve-status.html",function (data) {
+          status = data.status;
+          console.log("Valve Status: " + status + " [0b" + ("0000000" + status.toString(2)).substr(-8) + ']');
+          for(var ndx = 0;ndx < 6;ndx++) {
+            console.log("Setting " + VALVES[ndx] + ((status & (1 << ndx)) ? " checked" : " unchecked"));
+            $(VALVES[ndx]).prop("checked",status & (1 << ndx));
+          }
+          $("#valveControlDialog").dialog("open");
+        });
+        $(".valve-control").on("change",function(event) {
+          console.log("Turning " + event.target.name + ((event.target.checked) ? " on" : " off"));
+          $.post("valve-control.html",{"valve":event.target.name,"checked":event.target.checked},function(data,status,ajax) { console.log("Success!"); });
+        });
+        return false;
+      });
+
+      $("#core").load("schedule.html");
+
+    });
+
+  </script>
+
+</html>

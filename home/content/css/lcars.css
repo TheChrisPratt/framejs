@@ -1,0 +1,158 @@
+/*
+  Light:  #D7EBF9
+  Middle: #AED0EA
+  Dark:   #2779AA
+  Gray:   #8C8984
+*/ 
+
+* {
+  font-family: "Century Gothic", Verdana, Helvetica, Arial, sans-serif;
+}
+
+BODY {
+  background-color: white;
+  color: #2779AA;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+#body {
+  width: 100%;
+}
+
+#navigation {
+  background-color: #D7EBF9;
+  border-top-left-radius: 10px;
+  bottom: 0;
+  color: #2779AA;
+  left: 15px;
+  position: absolute;
+  right: 0;
+  top: 15px;
+}
+
+#primary {
+  text-align: right;
+  width: auto;
+}
+
+#primary li {
+  display: inline;
+  list-style-type: none;
+  padding: 0 7px;
+}
+
+#primary li a, #secondary li a {
+  color: #2779AA;
+  font-size: 10pt;
+  font-weight: bold;
+  line-height: 130%;
+  text-decoration: none;
+  vertical-align: top;
+}
+
+#primary ul, #secondary ul {
+  margin: 0;
+  padding: 0;
+}
+
+#primary li:hover {
+  background-color: #AED0EA;
+  border-radius: 10px;
+}
+
+#primary li:hover a {
+  color: #2779AA;
+}
+
+#secondary {
+  float: left;
+  padding: 10px 3px 0 3px;
+  width: 130px;
+}
+
+#secondary li {
+  display: block;
+  list-style-type: none;
+  padding-left: 5px;
+  position: relative;
+  vertical-align: middle;
+  z-index: 9;
+}
+
+#secondary li:hover {
+  background-color: #AED0EA;
+  border-radius: 10px;
+  z-index: 10;
+}
+
+#secondary li:hover > a {
+  color: #2779AA;
+}
+
+#secondary li ul {
+  background-color: #D7EBF9;
+  border: 1px solid #2779AA;
+  border-radius: 5px;
+  color: #2779AA;
+  display: none;
+  float:left;
+  left: 90px;
+  padding: 2px 0 2px 5px;
+  position: absolute;
+  top: 10px;
+  width: 130px;
+}
+
+#secondary li:hover > ul {
+  display: block;
+  z-index: 10;
+}
+
+#secondary hr {
+  background-color: #8C8984;
+  border: 1px solid #8C8984;
+  height: 1px;
+}
+
+#content {
+  background-color: white;
+  border-top-left-radius: 10px;
+  bottom: 0;
+  color: black;
+  float: left;
+  left: 140px;
+  padding: 10px;
+  position: absolute;
+  right: 0;
+  top: 20px;
+} 
+
+  /* Print Styles */
+.noprint {
+}
+
+.printonly {
+}
+
+.pageBreak {
+}
+
+@media print {
+  .noprint {
+    display: none;
+  }
+  
+  .pageBreak {
+    page-break-before: always;
+  }
+}
+
+@media screen {
+  .printonly {
+    display: none;
+  }
+}
+

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Node.js TestNode</title>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"/>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="scripts/jquery.imagemapster.js"></script>
+    <style>
+      area {
+        display: block;
+        cursor: hand;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="text-align:center; width:1330px; margin-left:auto; margin-right:auto;">
+      <img id="homeImg" src="images/home.png" usemap="#homeMap" border="0" width="1330" height="810" alt=""/>
+      <map id="homeMap" name="homeMap">
+        <area shape="poly" href="#NLawn"    alt="North Lawn"    title="North Lawn"    coords="358,512,469,513,467,227,449,222,433,219,410,217,393,218,375,221,359,226,343,233,330,241,317,250,303,262,294,272,285,283,274,298,296,331,317,361,331,392,345,429,355,466"/>
+        <area shape="poly" href="#SLawn"    alt="South Lawn"    title="South Lawn"    coords="351,595,475,595,478,775,247,771,284,735,309,697,330,662,341,632"/>
+        <area shape="poly" href="#FPlanter" alt="Front Planter" title="Front Planter" coords="529,513,468,513,467,227,543,229,543,279,490,280,490,418,501,438,519,456,529,464"/>
+        <area shape="poly" href="#NHill"    alt="North Hill"    title="North Hill"    coords="543,231,542,24,1306,28,1076,234,1054,227,1034,225,1015,227,986,234"/>
+        <area shape="poly" href="#SHill"    alt="South Hill"    title="South Hill"    coords="1081,611,1230,605,1305,29,1075,233,1094,246,1116,247,1134,237,1155,242,1171,257,1178,281,1170,301,1163,321,1169,345,1170,370,1156,388,1145,404,1138,424,1135,455,1128,479,1117,495,1106,505,1103,533,1097,564,1091,589"/>
+        <area shape="poly" href="#BLawn"    alt="Back Lawn"     title="Back Lawn"     coords="985,660,1003,569,1027,571,1046,563,1062,549,1071,525,1089,518,1106,506,1101,540,1096,568,1089,591,1082,610,1079,646,1074,675,1068,700,1060,728,1045,745,1024,748,1007,739,1000,720,1000,662"/>
+        <area shape="poly" href="#Pool"     alt="Pool"          title="Pool"          coords="1038,299,1033,279,1041,260,1060,249,1083,252,1110,253,1140,255,1161,271,1161,298,1150,325,1156,356,1141,383,1128,408,1112,427,1100,450,1079,454,1064,446,1056,426,1045,411,1044,388,1052,369,1064,350,1064,331,1055,313"/>
+      </map>
+        <!-- Image map text links - Start - If you do not wish to have text links under your image map, you can move or delete this DIV -->
+      <div style="text-align:center; font-size:12px; font-family:verdana; margin-left:auto; margin-right:auto; width:1330px;">
+        <a style="text-decoration:none; color:black; font-size:12px; font-family:verdana;" href="#NLawn" title="North Lawn">North Lawn</a> |
+        <a style="text-decoration:none; color:black; font-size:12px; font-family:verdana;" href="#SLawn" title="South Lawn">South Lawn</a> |
+        <a style="text-decoration:none; color:black; font-size:12px; font-family:verdana;" href="#FPlanter" title="Front Planter">Front Planter</a> |
+        <a style="text-decoration:none; color:black; font-size:12px; font-family:verdana;" href="#NHill" title="North Hill">North Hill</a> |
+        <a style="text-decoration:none; color:black; font-size:12px; font-family:verdana;" href="#SHill" title="South Hill">South Hill</a> |
+        <a style="text-decoration:none; color:black; font-size:12px; font-family:verdana;" href="#BLawn" title="Back Lawn">Back Lawn</a> |
+        <a style="text-decoration:none; color:black; font-size:12px; font-family:verdana;" href="#Pool" title="Pool">Pool</a> |
+      </div>
+        <!-- Image map text links - End - -->
+    </div>
+    <div id="dialog" title="Section Information">
+      <p>Wow, you clicked something</p>
+    </div>
+    <script>
+      $(document).ready(function() {
+        $.mapster.impl.init();
+        $('#homeImg').mapster({
+          fillOpacity: 0.5,
+          render_hilight: {
+            fillColor: '2aff00',
+            stroke: true
+          },
+          render_select: {
+            fillColor: 'ff000c',
+            stroke: false
+          },
+          fadeInterval: 50,
+          isSelectable: true,
+          mapKey: 'alt',
+          mapValue: 'title',
+          onClick: function (e) {
+            $("#dialog").dialog();
+          },
+          showToolTip: false
+        });
+      });
+    </script>
+  </body>
+</html>
