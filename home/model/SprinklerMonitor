@@ -1,0 +1,26 @@
+var Schedule = require("./model/Schedule").Schedule;
+
+exports.SprinklerMonitor = SprinklerMonitor;
+
+function SprinklerMonitor () {
+} //SprinklerMonitor
+
+SprinklerMonitor.prototype = {
+  schedule: null,
+
+  start: function () {
+    this.schedule = new Schedule().start(this.run);
+    return this.schedule;
+  }, //start
+
+  run: function (data) {
+    var now = new Time();
+    var tasks = this.schedule.getTasks();
+    for(var i = 0;i < tasks.length;i++) {
+      if(now.isAfter(tasks[i].getTime())) {
+        
+      }
+    }
+  } //run
+
+}; //*SprinklerMonitor

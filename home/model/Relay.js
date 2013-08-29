@@ -48,4 +48,4 @@ Relay.prototype = {
     return this.switches;
   }
 
-};
+}; //*Relay
