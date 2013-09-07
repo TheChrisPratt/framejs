@@ -14,7 +14,7 @@ Schedule.prototype = {
   start: function (monitor) {
     this.monitor = monitor;
     if(this.tasks.length > 0) {
-      this.scheduler = setInterval((typeof(this.monitor) == "function") ? this.monitor : this.monitor.run,FREQUENCY,this.data);
+      this.scheduler = setInterval((function(context) { return function() { (typeof(context.monitor) == "function") ? context.monitor() : context.monitor.run.call(context.monitor,context.data);}})(this),FREQUENCY,this.data);
       this.scheduler.unref();
     }
     return this;
@@ -31,7 +31,7 @@ Schedule.prototype = {
   add: function (task) {
     this.tasks.push(task);
     if((this.scheduler === null) && (this.tasks.length > 0)) {
-      this.scheduler = setInterval((typeof(this.monitor) == "function") ? this.monitor : this.monitor.run,FREQUENCY,this.data);
+      this.scheduler = setInterval((function(context) { return function() { (typeof(context.monitor) == "function") ? context.monitor() : context.monitor.run.call(context.monitor,context.data);}})(this),FREQUENCY,this.data);
       this.scheduler.unref();
     }
     return this;
@@ -39,7 +39,7 @@ Schedule.prototype = {
 
   remove: function (task) {
     var ndx = -1;
-    if(typeof(task) == 'number') {
+    if(typeof(task) == "number") {
       ndx = task;
     } else {
       ndx = this.tasks.indexOf(task);
@@ -58,7 +58,7 @@ Schedule.prototype = {
   }, //getTasks
 
   addData: function (name,value) {
-    data[name] = value;
+    this.data[name] = value;
   }, //addData
 
   toString: function () {

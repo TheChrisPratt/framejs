@@ -1,7 +1,8 @@
 var Relay = require("./model/Relay").Relay;
 //var Schedule = require("./model/Schedule").Schedule;
+var SprinklerMonitor = require("./model/SprinklerMonitor").SprinklerMonitor;
 var Task = require("./model/Task").Task;
-var Time = require("./model/Time").Time;
+var Time = require("../framework/Time").Time;
 var router = require("../framework/router");
 var util = require("util");
 
