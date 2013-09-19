@@ -1,12 +1,14 @@
+//var log = require("log4js").getLogger("schedule");
+
 exports.Schedule = Schedule;
 
 var FREQUENCY = 5000;
 
-function Schedule () {
+function Schedule (tasks) {
+  this.tasks = tasks || [];
 } //Schedule
 
 Schedule.prototype = {
-  tasks: [],
   monitor: null,
   scheduler: null,
   data: {},
@@ -14,7 +16,7 @@ Schedule.prototype = {
   start: function (monitor) {
     this.monitor = monitor;
     if(this.tasks.length > 0) {
-      this.scheduler = setInterval((function(context) { return function() { (typeof(context.monitor) == "function") ? context.monitor() : context.monitor.run.call(context.monitor,context.data);}})(this),FREQUENCY,this.data);
+      this.scheduler = setInterval((function(context) { return function() { (typeof(context.monitor) == "function") ? context.monitor(context.data) : context.monitor.run.call(context.monitor,context.data);}})(this),FREQUENCY);
       this.scheduler.unref();
     }
     return this;
@@ -31,7 +33,7 @@ Schedule.prototype = {
   add: function (task) {
     this.tasks.push(task);
     if((this.scheduler === null) && (this.tasks.length > 0)) {
-      this.scheduler = setInterval((function(context) { return function() { (typeof(context.monitor) == "function") ? context.monitor() : context.monitor.run.call(context.monitor,context.data);}})(this),FREQUENCY,this.data);
+      this.scheduler = setInterval((function(context) { return function() { (typeof(context.monitor) == "function") ? context.monitor(context.data) : context.monitor.run.call(context.monitor,context.data);}})(this),FREQUENCY);
       this.scheduler.unref();
     }
     return this;

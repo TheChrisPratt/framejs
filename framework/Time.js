@@ -1,6 +1,9 @@
+var log = require("log4js").getLogger("time");
 var strutils = require("./strutils.js");
 
 exports.Time = Time;
+
+exports.DAY_OF_WEEK = ["sun","mon","tue","wed","thu","fri","sat"];
 
 var MS = 1;             // Milliseconds = 1
 var S = (1000 * MS);    // Seconds      = 1000
@@ -9,9 +12,19 @@ var H = (60 * M);       // Hours        = 3600000
 var AM = 0;             // Post 12am    = 0
 var PM = (12 * H);      // Post 12pm    = 43200000
 
+exports = {
+  MS: MS,
+  S: S,
+  M: M,
+  H: H,
+  AM: AM,
+  PM: PM
+};
+
 /**
  * Constructor - If no parameters are supplied, uses the current local time.
- * If a single date parameter is supplied it's time fields are used.
+ * If a single date parameter is supplied, it's time fields are used.
+ * If a single number parameter is supplied, it's assumed to be milliseconds after midnight 
  * Otherwise...
  *
  * @param h hours [1..24] or a Date Object
@@ -28,6 +41,9 @@ function Time (h,m,s,ms,a) {
     min = date.getMinutes();
     sec = date.getSeconds();
     mils = date.getMilliseconds();
+  } else if((arguments.length == 1) && (typeof(h) === "number")) {
+    this.millis = h;
+    return;
   } else {
     hour = h || 1;
     min = m || 0;
@@ -46,6 +62,7 @@ function Time (h,m,s,ms,a) {
       meridian = s || 'a';
     }
   }
+  log.debug("Setting Time: Meridian=" + meridian + " (" + (meridian && (meridian.toLowerCase().charAt(0) === 'p')) + ')');
   this.millis = (H * hour) + (M * min) + (S * sec) + (MS * mils) + ((meridian && (meridian.toLowerCase().charAt(0) === 'p')) ? PM : AM);
 } //Time
 
@@ -88,11 +105,20 @@ Time.prototype = {
   }, //getTime
 
   isAfter: function (time) {
-    return ((this.millis - time.getTime()) > 0);
+    if(time instanceof Time) {
+      return ((this.millis - time.getTime()) > 0);
+    } else if(time instanceof Date) {
+      return ((this.millis - (time.getTime() - time.clearTime().getTime())) > 0);
+    }
+    return false;
   }, //isAfter
 
   isBefore: function (time) {
-    return ((time.getTime() - this.millis) > 0);
+    if(time instanceof Time) {
+      return ((time.getTime() - this.millis) > 0);
+    } else if(time instanceof Date) {
+      return (((time.getTime() - time.clearTime().getTime()) - this.millis) > 0);
+    }
   }, //isBefore
 
   /**

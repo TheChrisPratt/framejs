@@ -2,9 +2,31 @@ require("./strutils");
 var fs = require("fs");
 var http = require("http");
 var https = require("https");
+var log4js = require("log4js");
 var querystring = require("querystring");
-var route = require("./router").route;
+var router = require("./router");
 var url = require("url");
+var util = require("util");
+
+var log = null;
+
+exports.initLogging = function (options) {
+  options = options || {};
+    // Set up logging
+  var logconfig = options.logconfig || "log4js.json";
+  if(typeof(logconfig) == "string") {
+    if(fs.existsSync(logconfig)) {
+      log4js.configure(JSON.parse(fs.readFileSync(logconfig,"utf8")));
+    } else {
+      console.log("Unable to locate " + logconfig + ", using defaults")
+    }
+  } else if(typeof(logconfig) == "object") {
+    log4js.configure(logconfig);
+  } else {
+    console.log("Unable to configure logging using a " + typeof(logconfig) + ", using defaults");
+  }
+  log = log4js.getLogger("server");
+}; //initLogging
 
 exports.start = function (options,handle) {
 
@@ -22,50 +44,52 @@ exports.start = function (options,handle) {
     } //getPostBody
     
     var path = url.parse(req.url).pathname;
-    console.log(req.method + " Request for " + path + " received.");
+    log.info(req.method + " Request for " + path + " received.");
     if(req.method.toUpperCase() === "POST") {
       var contentType = req.headers["content-type"];
-      console.log("Content-Type: " + contentType);
+      log.debug("Content-Type: " + contentType);
       if(contentType.startsWith("multipart/form-data")) {
-        console.log("Parsing Multipart Form Data...");
+        log.debug("Parsing Multi-part Form Data...");
         var formidable = require("formidable");
         var form = new formidable.IncomingForm();
         form.parse(req,function(err,fields,files) {
           if(!err) {
             var args = {fields: fields,files: files};
-            route(options,handle,path,res,args);
+            router.route(options,handle,path,res,args);
           } else {
-            console.log(err);
+            log.error(err);
           }
         });
       } else if(contentType.startsWith("application/json")) {
-        console.log("Parsing JSON Data...");
+        log.debug("Parsing JSON Data...");
         getPostBody(function (body) {
-          route(options,handle,path,res,{fields: JSON.parse(body)});
+          router.route(options,handle,path,res,{fields: JSON.parse(body)});
         });
       } else {
-        console.log("Parsing Form Data...");
+        log.debug("Parsing Form Data...");
         getPostBody(function (body) {
-          route(options,handle,path,res,{fields: querystring.parse(url.parse(req.url,false).query + '&' + body)});
+          router.route(options,handle,path,res,{fields: querystring.parse(url.parse(req.url,false).query + '&' + body)});
         });
       }
     } else if(req.method.toUpperCase() === "GET") {
-      console.log("Parsing Query String...");
+      log.debug("Parsing Query String...");
       var args = {fields: url.parse(req.url,true).query};
-      route(options,handle,path,res,args);
+      router.route(options,handle,path,res,args);
     } else {
-      console.log("Unsupported Method: " + req.method);
+      log.warn("Unsupported Method: " + req.method);
       res.writeHead(500,{"Content-Type": "text/plain"});
       res.write("Unsupported Method: " + req.method);
       res.end();
     }
   } //onRequest
 
-  if(!options) {
-    options = {};
+  options = options || {};
+
+  if(log === null) {
+    initLogging(options);
   }
 
-    // Process the Command Line Arguments to set/override supplied options
+    // Process the Command Line Arguments to set / override supplied options
   process.argv.forEach(function (val,ndx,ary) {
     if(val.startsWith('-')) {
       switch(val) {
@@ -73,7 +97,7 @@ exports.start = function (options,handle) {
           if(ary.length > ndx + 1) {
             options.port = parseInt(ary[ndx + 1],10);
           } else {
-            console.log("Port Number not specified");
+            log.error("Port Number not specified");
           }
           break;
         case "-secure":
@@ -83,21 +107,21 @@ exports.start = function (options,handle) {
           if(ary.length > ndx + 1) {
             options.key = fs.readFileSync(ary[ndx + 1]);
           } else {
-            console.log("Missing Key Filename");
+            log.warn("Missing Key Filename");
           }
           break;
         case "-cert":
           if(ary.length > ndx + 1) {
             options.cert = fs.readFileSync(ary[ndx + 1]);
           } else {
-            console.log("Missing Certificate Filename");
+            log.error("Missing Certificate Filename");
           }
           break;
         case "-mode":
           if(ary.length > ndx + 1) {
             options.devMode = ary[ndx + 1].toLowerCase().startsWith("dev");
           } else {
-            console.log("Missing Mode (dev | prod)");
+            log.warn("Missing Mode (dev | prod)");
           }
           break;
       }
@@ -111,13 +135,13 @@ exports.start = function (options,handle) {
   if(!options.secure || ((typeof(options.key) !== "undefined") && (typeof(options.cert) !== "undefined"))) {
     if(options.secure) {
       https.createServer(options,onRequest).listen(options.port);
-      console.log("Secure Server is listening at https://localhost:" + options.port + '/');
+      log.info("Secure Server is listening at https://localhost:" + options.port + '/');
     } else {
       http.createServer(onRequest).listen(options.port);
-      console.log("Server is listening at http://localhost:" + options.port + '/');
+      log.info("Server is listening at http://localhost:" + options.port + '/');
     }
   } else {
-    console.log("Secure Servers require Security Key and Certificate to be supplied");
+    log.error("Secure Servers require Security Key and Certificate to be supplied");
   }
 
 }; //start

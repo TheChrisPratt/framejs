@@ -13,6 +13,8 @@ var options = {
   key: fs.readFileSync("security/selfsigned.key"),
   cert: fs.readFileSync("security/selfsigned.cert"),
 */
+  schedule: "home/schedule.json",
+  logconfig: "home/log4js.json",
 //  xbee_port: "/dev/ttyAMA0",
   xbee_port: "COM6",
   xbee_opts: {
@@ -20,4 +22,6 @@ var options = {
   }
 };
 
+server.initLogging(options);
+requestHandlers.init(options);
 server.start(options,requestHandlers.handlers);

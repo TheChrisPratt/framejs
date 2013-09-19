@@ -1,17 +1,23 @@
 require("../../framework/date.js");
 var Schedule = require("./Schedule").Schedule;
+var log = require("log4js").getLogger("sprinklerMonitor");
 
 exports.SprinklerMonitor = SprinklerMonitor;
 
-function SprinklerMonitor () {
+function SprinklerMonitor (tasks) {
+  this.schedule = new Schedule(tasks);
 } //SprinklerMonitor
 
 SprinklerMonitor.prototype = {
   schedule: null,
+  inTask: false,
+
+  getSchedule: function (tasks) {
+    return this.schedule;
+  }, //getSchedule
 
   start: function () {
-    this.schedule = new Schedule().start(this);
-    return this.schedule;
+    this.schedule.start(this);
   }, //start
 
   run: function (data) {
@@ -19,11 +25,18 @@ SprinklerMonitor.prototype = {
     var tasks = this.schedule.getTasks();
     for(var i = 0;i < tasks.length;i++) {
       if(now.isAfter(tasks[i].getNext())) {
-        console.log('[' + now.toString("yyyy-MM-dd h:mm:sst") + "] Firing Task: " + tasks[i]);
-        //TODO@@@: Do Something Useful
-        tasks[i].update();
-      } else {
-        console.log('[' + now.toString("yyyy-MM-dd h:mm:sst") + "] Not Firing: " + tasks[i]);
+        if(!this.inTask) {
+          var valve = data.valves.indexOf(tasks[i].key.toLowerCase());
+          log.debug("Turning valve " + valve + " on for " + tasks[i].duration + "min");
+          data.relay.on(valve);
+          this.inTask = true;
+          setTimeout(function(context) { 
+            log.debug("Turning valve " + valve + " off"); 
+            data.relay.off(valve); 
+            context.inTask = false;
+          },tasks[i].duration * 60000,this);
+          tasks[i].update();
+        }
       }
     }
   } //run

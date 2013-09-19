@@ -1,0 +1,21 @@
+{
+  "level": "debug",
+  "appenders": [
+    { 
+      "type": "console",
+      "layout": {
+        "type": "basic"
+      }
+    }, 
+    { 
+      "type": "file", 
+      "filename": "logs/home.log", 
+      "layout": { 
+        "type": "pattern",
+        "pattern": "%d %-5p %c: %m"
+      } 
+    }
+  ],
+  "replaceConsole": "true"
+}
+

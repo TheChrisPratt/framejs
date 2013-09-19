@@ -1,6 +1,7 @@
 require("./strutils");
 var fs = require("fs");
 var mu = require("mu2");
+var log = require("log4js").getLogger("router");
 
 var mimeTypes = [];
 mimeTypes[".js"]   = "application/javascript";
@@ -40,7 +41,7 @@ exports.route = function (options,handle,path,res,args) {
       }
     });
   } else if(typeof handle[path] === 'function') {
-    console.log("Routing: " + path);
+    log.info("Routing: " + path);
     handle[path](res,args,options);
   } else {
     fn = ((path === '/') ? "index" : path.slice(1)) + ".html";
@@ -50,7 +51,7 @@ exports.route = function (options,handle,path,res,args) {
       } else if(options.devMode && (path === "/exit")) {
         exports.serve(options,process.cwd() + "/framework/content/exit.html","text/html",null,res);
         setTimeout(function () {
-          console.log("Exiting, by user request");
+          log.info("Exiting, by user request");
           process.exit(0);
         },500);
       } else {
@@ -62,7 +63,7 @@ exports.route = function (options,handle,path,res,args) {
             }
             exports.serve(options,path.slice(1),type,args,res);
           } else {
-            console.log("Not Found: " + path + " for " + path);
+            log.warn("Not Found: " + path + " for " + path);
             res.writeHead(404,path + " not found",{"Content-Type": "text/plain"});
             res.end("404 '" + path + "' Not Found");
           }
@@ -87,7 +88,7 @@ exports.serve = function (options,fn,type,args,res,data) {
     fn = options.content + '/' + fn;
   }
   if(type.startsWith("text/") || (type === "application/json") || (type === "application/javascript")) {
-    console.log("Processing: " + fn);
+    log.info("Processing: " + fn);
     if(options && options.devMode) {
       mu.clearCache(options);
     }
@@ -104,13 +105,11 @@ exports.serve = function (options,fn,type,args,res,data) {
   } else {
     fs.readFile(fn,function(err,file) {
       if(!err) {
-        if(options.devMode) {
-          console.log("Serving: " + fn + " [" + type + ']');
-        }
+        log.debug("Serving: " + fn + " [" + type + ']');
         res.writeHead(200,"OK",{"Content-Type": type});
         res.end(file);
       } else {
-        console.log("Error: " + err);
+        log.error("Error: " + err);
         res.writeHead(500,"Server Error",{"Content-Type": "text/plain"});
         res.end("500 Internal Server Error: " + err);
       }
