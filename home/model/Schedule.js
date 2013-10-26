@@ -30,6 +30,16 @@ Schedule.prototype = {
     return this;
   }, //stop
 
+  nextId: function () {
+    var id = -1;
+    for(var i = 0;i < this.tasks.length;i++) {
+      if(this.tasks[i].getId() > id) {
+        id = this.tasks[i].getId();
+      }
+    }
+    return Number(id) + 1;
+  }, //nextId
+
   add: function (task) {
     this.tasks.push(task);
     if((this.scheduler === null) && (this.tasks.length > 0)) {
@@ -42,7 +52,12 @@ Schedule.prototype = {
   remove: function (task) {
     var ndx = -1;
     if(typeof(task) == "number") {
-      ndx = task;
+      for(var i = 0;i < this.tasks.length;i++) {
+        if(this.tasks[i].id == task) {
+          ndx = i;
+          break;
+        }
+      }
     } else {
       ndx = this.tasks.indexOf(task);
     }
@@ -54,6 +69,25 @@ Schedule.prototype = {
     }
     return this;
   }, //remove
+
+  get: function (task) {
+    for(var i = 0;i < this.tasks.length;i++) {
+      if(this.tasks[i].id == task) {
+        return this.tasks[i];
+      }
+    }
+    return null;
+  }, //get
+
+  set: function (id,task) {
+    for(var i = 0;i < this.tasks.length;i++) {
+      if(this.tasks[i].id == id) {
+        this.tasks[i] = task;
+        return true;
+      }
+    }
+    return false;
+  }, //set
 
   getTasks: function () {
     return this.tasks;

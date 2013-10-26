@@ -21,10 +21,3 @@ if(typeof(String.prototype.endsWith) !== "function") {
 exports.toPaddedString = function (num,min) {
   return ("000000" + num).slice(-1 * (min || 2));
 }; //toPaddedString
-
-exports.toDateString = function (date) {
-  if(arguments.length == 0) {
-    date = new Date();
-  }
-  return 
-}

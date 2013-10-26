@@ -1,14 +1,14 @@
 {{#args.tasks}}
-  <div style="margin:5px;">
-    <div style="min-width:385px;float:left;text-indent:15px;">
-      <a href="?task={{key}}" title="Edit Task" class="edit-task ui-state-default ui-corner-all noprint" style="margin-left:5px;float:left;"><span class="ui-icon ui-icon-pencil"></span></a>&nbsp;
-      <a href="?task={{key}}" title="Temove Task" class="del-task ui-state-default ui-corner-all noprint" style="margin-left:2px;float:left;"><span class="ui-icon ui-icon-trash"></span></a>&nbsp;
-      {{description}} for {{duration}} minutes at {{time}} on {{days}}
+  <div class="task-div">
+    <div class="task-row{{#disabled}} disabled{{/disabled}}">
+      <a href="?task={{id}}" title="Edit Task" class="edit-task ui-state-default ui-corner-all noprint"><span class="ui-icon ui-icon-pencil"></span></a>&nbsp;
+      <a href="?task={{id}}" title="Remove Task" class="del-task ui-state-default ui-corner-all noprint"><span class="ui-icon ui-icon-trash"></span></a>&nbsp;
+      <span title="Next: {{next}}">{{description}} for {{duration}} minutes at {{time}} on {{days}}</span>
     </div>
-    <div style="clear:both;"></div>
+    <div class="reset"></div>
   </div>
 {{/args.tasks}}
-<div style="float:left;">
-  <p><a href="#" id="addTaskButton" class="ui-state-default ui-corner-all noprint" style="padding:.4em 1em .4em 20px;text-decoration:none;position:relative;"><span class="ui-icon ui-icon-plus" style="margin:0 5px 0 0; position:absolute; left:.2em; top:50%; margin-top:-8px;"></span>Add Task</a></p>
+<div class="left">
+  <p><a href="#" id="addTaskButton" class="ui-state-default ui-corner-all noprint"><span id="addTaskPlus" class="ui-icon ui-icon-plus"></span>Add Task</a></p>
 </div>
-<div style="clear:both;"></div>
+<div class="reset"></div>

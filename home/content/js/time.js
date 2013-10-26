@@ -1,10 +1,3 @@
-var log = require("log4js").getLogger("time");
-var strutils = require("./strutils.js");
-
-exports.Time = Time;
-
-exports.DAY_OF_WEEK = ["sun","mon","tue","wed","thu","fri","sat"];
-
 var MS = 1;             // Milliseconds = 1
 var S = (1000 * MS);    // Seconds      = 1000
 var M = (60 * S);       // Minutes      = 60000
@@ -12,16 +5,6 @@ var H = (60 * M);       // Hours        = 3600000
 var DAY = (24 * H);     // Day          = 86400000
 var AM = 0;             // Post 12am    = 0
 var PM = (12 * H);      // Post 12pm    = 43200000
-
-exports = {
-  MS: MS,
-  S: S,
-  M: M,
-  H: H,
-  DAY: DAY,
-  AM: AM,
-  PM: PM
-};
 
 /**
  * Constructor - If no parameters are supplied, uses the current local time.
@@ -146,9 +129,6 @@ Time.prototype = {
     return new Time(this.millis);
   }, //clone
 
-  /**
-   * TODO@@@: Add a Java SimpleDateFormat string that defaults to 'h:mma'
-   */
   toString: function () {
     var h = this.getHours(12);
     return ((h > 0) ? h : 12) + ':' + strutils.toPaddedString(this.getMinutes(),2) + (this.isAM() ? 'a' : 'p');

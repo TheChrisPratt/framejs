@@ -18,24 +18,27 @@ SprinklerMonitor.prototype = {
 
   start: function () {
     this.schedule.start(this);
+    return this.schedule;
   }, //start
 
   run: function (data) {
+    var task;
     var now = new Date();
     var tasks = this.schedule.getTasks();
     for(var i = 0;i < tasks.length;i++) {
-      if(now.isAfter(tasks[i].getNext())) {
+      task = tasks[i];
+      if(!task.isDisabled() && now.isAfter(task.getNext())) {
         if(!this.inTask) {
-          var valve = data.valves.indexOf(tasks[i].key.toLowerCase());
-          log.debug("Turning valve " + valve + " on for " + tasks[i].duration + "min");
+          var valve = data.valves.indexOf(task.key.toLowerCase());
+          log.debug("Task " + task.id + ": Turning valve " + valve + " on for " + task.duration + "min");
           data.relay.on(valve);
           this.inTask = true;
           setTimeout(function(context) { 
             log.debug("Turning valve " + valve + " off"); 
             data.relay.off(valve); 
             context.inTask = false;
-          },tasks[i].duration * 60000,this);
-          tasks[i].update();
+          },task.duration * 60000,this);
+          task.update();
         }
       }
     }

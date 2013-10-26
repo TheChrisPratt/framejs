@@ -9,9 +9,25 @@
     <link rel="alternate" type="application/rss+xml" href="http://planetpratt.blogspot.com/atom.xml" title="PlanetPratt Blog" />
     <link rel="stylesheet" href="css/lcars.css" media="screen" />
     <link rel="stylesheet" href="css/cupertino/jquery-ui-1.10.3.custom.css" />
+    <style>
+      #dialog-confirm           { display: none; }
+      #dialog-confirm SPAN      { float: left; margin: 0 7px 20px 0; }
+      #content #core .task-div  { margin: 5px; }
+      #content #core .task-row  { min-width: 385px; float: left; text-indent: 15px; }
+      #content #core .disabled  { color: gray; }
+      #content #core .edit-task { margin-left: 5px; float: left; }
+      #content #core .del-task  { margin-left: 2px; float: left; }
+      #content #core #addTaskButton { padding: .4em 1em .4em 20px; text-decoration: none; position: relative; }
+      #content #core #addTaskPlus   { margin: 0 5px 0 0; position: absolute; left: .2em; top: 50%; margin-top: -8px; }
+      DIV.reset                 { clear: both; }
+      DIV.left                  { float: left; }
+      DIV.right                 { float: right; }
+    </style>
     <script src="js/jquery-2.0.3.js"></script>
+    <script src="js/jquery.htmlutils.js"></script>
     <script src="js/jquery-ui-1.10.3.custom.js"></script>
     <script src="js/jquery.validate.js"></script>
+    <script src="js/time.js"></script>
     <script>
       onerror = function(errMsg,location,lineNum) {
         alert("Doh! " + location + ':' + lineNum + " - " + errMsg);
@@ -69,7 +85,7 @@
                 <li><a href="http://mail.anodyzed.com/" target="_blank">Mail</a></li>
                 <li>
                   <a href="http://svn.planetpratt.com:9880/" target="_blank">Subversion</a>
-                  <ul style="">
+                  <ul>
                     <li><a href="http://svn.anodyzed.com:9890/ubersvn" target="_blank">Admin</a></li>
                   </ul>
                 </li>
@@ -79,28 +95,27 @@
             <li>
               <a href="http://home.planetpratt.com" target="_blank">Home</a>
               <ul>
-                <li><a href="http://www.fandango.com/" target="_blank">Fandango</a></li>
-                <li><a href="http://www.last.fm/home" target="_blank">Last FM</a></li>
-                <li><a href="http://www.mspot.com/" target="_blank">mSpot</a></li>
-                <li><a href="http://www.songza.com/PlanetPratt" target="_blank">Songza</a></li>
                 <li><a href="http://sunpowermonitor.com/residential/" target="_blank">Sun Power</a></li>
                 <li><a href="http://www.vonage.com/" target="_blank">Vonage</a></li>
                 <li><a href="http://www.wsj.com/" target="_blank">WSJ</a></li>
               </ul>
             </li>
+{{#opts.devMode}}
             <li><a href="/exit">Exit</a></li>
+{{/opts.devMode}}
           </ul>
         </nav>
         <div id="content">
-          <div style="float:right;" class="noprint">
+          <div id="calendar" class="right noprint">
             <div id="datePicker"></div>
           </div>
-          <div id="core" style="float:left;"></div>
+          <div id="core" class="left"></div>
         </div>
       </div>
     </div>
     <div id="addTaskDialog" class="dialog" title="Add Task">
       <form id="addTaskForm" name="addTask" action="add-task.html">
+        <input type="hidden" name="id" id="id" />
         <table border="0">
           <tr>
             <th><label for="zone">Zone</label></th>
@@ -113,6 +128,9 @@
                 <option value="NHill">Back Yard North Hill Drip</option>
                 <option value="SHill">Back Yard South Hill Drip</option>
               </select>
+            </td>
+            <td>
+              <label><input type="checkbox" name="disabled" id="disabled" value="true" /> Disabled</label>
             </td>
           </tr>
           <tr>
@@ -203,15 +221,18 @@
         </table>
       </form>
     </div>
+    <div id="dialog-confirm" class="dialog" title="Dialog Title">
+      <p><span id="dialog-confirm-icon" class="ui-icon ui-icon-alert"></span><span id="dialog-confirm-text">Dialog Text</span></p>
+    </div>
   </body>
   <script>
     $(function() {
 
-        //##### Datepicker #####
+        //##### DatePicker #####
       $("#datePicker").datepicker({
         altField: "#when",
-        altFormat: "yy-mm-dd",
-        dateFormat: "yy-mm-dd",
+        altFormat: "yyyy-mm-dd",
+        dateFormat: "yyyy-mm-dd",
         defaultDate: "${when}",
         inline: true,
 //        onSelect: function (date,picker) {
@@ -227,18 +248,26 @@
 
       $("#addTaskDialog").dialog({
         autoOpen: false,
-        buttons: {
-          "Add": function() {
-            var frm = $("#addTaskForm");
-            if(frm.valid()) {
-              $("#core").load(frm.attr("action"),frm.serialize());
-              $(this).dialog("close");
+        buttons: [
+          {
+            id: "task-add",
+            text: "Add",
+            click: function() {
+              var frm = $("#addTaskForm");
+              if(frm.valid()) {
+                $("#core").load(frm.attr("action"),frm.serialize());
+                $(this).dialog("close");
+              }
             }
           }, 
-          "Cancel": function() { 
-            $(this).dialog("close"); 
+          {
+            id: "task-done",
+            text: "Cancel",
+            click: function() { 
+              $(this).dialog("close"); 
+            }
           }
-        },
+        ],
         closeText: "Close",
         width: 600
       });
@@ -254,12 +283,48 @@
           mn = 0;
           hr = (hr + 1) % 24;
         }
+        frm.find("#id").val("");
         frm.find((hr > 11) ? "#pm" : "#am").attr("checked","checked");
         hr = hr % 12;
         frm.find("#hour option[value='" + ((hr == 0) ? 12 : hr) + "']").attr("selected","selected");
         frm.find("#minute option[value='" + ((mn < 10) ? '0' + mn : '' + mn) + "']").attr("selected","selected");
         $("#meridians").buttonset("refresh");
+        frm.find("#duration").val("");
+        frm.find("#disabled").prop("checked",false);
         $("#addTaskDialog").dialog("open");
+        return false;
+      });
+
+      $(document).on("click",".edit-task",function () {
+        var args = $.parseQuery(this.href);
+        $("#meal").val(args.meal);
+        $.getJSON("get-task.html",args,function (json,status) {
+          $("#task-add").button("option","label","Update");
+          var frm = $("#addTaskForm");
+          frm.find("#id").val(json.id);
+          frm.find("#zone").val(json.key);
+          frm.find("#days").val(json.days);
+          var time = new Time(json.time.millis);
+          frm.find(time.isPM() ? "#pm" : "#am").attr("checked","checked");
+          frm.find("#hour option[value='" + (time.getHours(12)) + "']").attr("selected","selected");
+          frm.find("#minute option[value='" + ((time.getMinutes() < 10) ? '0' + time.getMinutes() : '' + time.getMinutes()) + "']").attr("selected","selected");
+          $("#meridians").buttonset("refresh");
+          frm.find("#duration").val(json.duration);
+          frm.find("#disabled").prop("checked",json.disabled);
+          $("#addTaskDialog").dialog("open");
+        });
+        return false;
+      });
+
+      $(document).on("click",".del-task",function () {
+        var self = this;
+        confirmDialog({
+          title: "Delete Task?",
+          text: "Delete the selected Task?",
+          confirm: function () {
+            $("#core").load("del-task.html",$.parseQuery(self.href));
+          }
+        });
         return false;
       });
 
@@ -291,6 +356,34 @@
       });
 
       $("#core").load("schedule.html");
+
+        //##### Utilities #####
+      function confirmDialog (args) {
+        var dialog = $("#dialog-confirm");
+        dialog.attr("title",args.title);
+        dialog.find("#dialog-confirm-text").text(args.text);
+        dialog.dialog({
+          buttons: [
+            {
+              id: "confirm-ok",
+              text: args.okButtonText || "Ok",
+              click: function() {
+                args.confirm.call();
+                $(this).dialog("close");
+              }
+            },
+            {
+              id: "confirm-cancel",
+              text: args.cancelButtonText || "Cancel",
+              click: function() {
+                $(this).dialog("close");
+              }
+            }
+          ],
+          modal: true,
+          resizable: false
+        });
+      } //confirmDialog
 
     });
 
