@@ -1,6 +1,9 @@
 var fs = require("fs.extra");
 var router = require("../framework/router");
 
+exports.init = function (options) {
+}; //init
+
 exports.handlers = {
 
   "/upload": function (res,args,options) {

@@ -14,4 +14,6 @@ var options = {
 */
 };
 
+server.initLogging(options);
+requestHandlers.init(options);
 server.start(options,requestHandlers.handlers);
